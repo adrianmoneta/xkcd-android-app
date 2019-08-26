@@ -1,7 +1,8 @@
-package com.moneta.adrian.xkcd
+package com.moneta.adrian.xkcd.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.moneta.adrian.xkcd.R
 
 class MainActivity : AppCompatActivity() {
 
