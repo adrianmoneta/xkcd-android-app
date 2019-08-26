@@ -1,43 +1,44 @@
 package com.moneta.adrian.xkcd.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.moneta.adrian.xkcd.R
 import com.moneta.adrian.xkcd.model.Comic
-import com.moneta.adrian.xkcd.service.ApiFactory
-import com.moneta.adrian.xkcd.service.ComicApi
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import com.moneta.adrian.xkcd.utils.*
+import com.moneta.adrian.xkcd.mvp.XKCDPresenter
+import com.moneta.adrian.xkcd.mvp.XKCDView
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), XKCDView {
+
+
+    private val presenter: XKCDPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        presenter.view = this
+
         setContentView(R.layout.activity_main)
-        testApi()
-
     }
 
-    fun testApi() {
-        val api = ApiFactory.getApi(ComicApi::class.java)
-        api.getComic(10).enqueue(object: Callback<Comic> {
 
-            override fun onResponse(call: Call<Comic>, response: Response<Comic>) {
-                Log.d(TAG, "Got [${response.code()}] response code")
-                testApiTextView.text = response.body()?.toString() ?: "Almost"
-                Log.d(TAG, response.body()?.toString() ?: "")
-            }
-
-            override fun onFailure(call: Call<Comic>, t: Throwable) {
-                Log.w(TAG, "Couldn't resolve comic", t)
-            }
-
-
-        })
+    //XKCDView
+    override fun onCount(count: Int) {
+        testApiTextView.text = "$count"
     }
+
+    override fun onCountError() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onComic(comic: Comic) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onComicError() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }
