@@ -1,16 +1,24 @@
 package com.moneta.adrian.xkcd.activity
 
+import android.database.Cursor
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
 import com.moneta.adrian.xkcd.R
-import com.moneta.adrian.xkcd.model.Comic
 import com.moneta.adrian.xkcd.mvp.XKCDPresenter
 import com.moneta.adrian.xkcd.mvp.XKCDView
+import com.moneta.adrian.xkcd.provider.CursorHelper
+import com.moneta.adrian.xkcd.provider.UriHelper
+import com.moneta.adrian.xkcd.utils.TAG
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 
 
-class MainActivity : AppCompatActivity(), XKCDView {
+class MainActivity : AppCompatActivity(), XKCDView, LoaderManager.LoaderCallbacks<Cursor> {
+
 
 
     private val presenter: XKCDPresenter by inject()
@@ -19,26 +27,39 @@ class MainActivity : AppCompatActivity(), XKCDView {
         super.onCreate(savedInstanceState)
 
         presenter.view = this
+        presenter.load()
 
         setContentView(R.layout.activity_main)
     }
 
 
     //XKCDView
-    override fun onCount(count: Int) {
-        testApiTextView.text = "$count"
+    override fun onCount(count: Int) = load(count)
+
+
+    //LoaderManager.LoaderCallbacks
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
+        val uri = UriHelper.buildComicUri(id)
+        return CursorLoader(this, uri, null, null, null, null)
+
     }
 
-    override fun onCountError() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
+        data ?: return
+        if(data.moveToFirst()) {
+            testApiTextView.text = CursorHelper.readComic(data).num.toString()
+        }
     }
 
-    override fun onComic(comic: Comic) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onLoaderReset(loader: Loader<Cursor>) {
+        Log.i(TAG, "loading")
     }
 
-    override fun onComicError() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+    private fun load(issueNumber: Int) {
+        LoaderManager.getInstance(this).initLoader(issueNumber, null, this)
     }
+
+
 
 }

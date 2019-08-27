@@ -12,4 +12,4 @@ data class Comic(
     val img: String,
     val title: String,
     val day: String
-)
+);

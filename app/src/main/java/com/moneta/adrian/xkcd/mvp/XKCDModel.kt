@@ -3,12 +3,15 @@ package com.moneta.adrian.xkcd.mvp
 import android.util.Log
 import com.moneta.adrian.xkcd.model.Comic
 import com.moneta.adrian.xkcd.service.ComicApi
+import com.moneta.adrian.xkcd.service.StorageService
 import com.moneta.adrian.xkcd.utils.TAG
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class XKCDModel(private val comicApi: ComicApi) {
+class XKCDModel(
+    private val comicApi: ComicApi,
+    private val storageService: StorageService) {
 
     fun getComicsCount(complete: (Int?) -> Unit) {
         comicApi.getLastComicIssue().enqueue(object: Callback<Comic> {
@@ -19,7 +22,7 @@ class XKCDModel(private val comicApi: ComicApi) {
                 val lastIssue = response.body() ?: return complete(null)
                 complete(lastIssue.num)
 
-                //todo cache last issue
+                storageService.putIssue(lastIssue)
             }
 
             override fun onFailure(call: Call<Comic>, t: Throwable) {

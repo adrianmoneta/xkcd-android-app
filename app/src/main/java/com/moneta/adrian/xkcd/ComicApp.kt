@@ -5,6 +5,8 @@ import com.moneta.adrian.xkcd.mvp.XKCDModel
 import com.moneta.adrian.xkcd.mvp.XKCDPresenter
 import com.moneta.adrian.xkcd.service.ApiFactory
 import com.moneta.adrian.xkcd.service.ComicApi
+import com.moneta.adrian.xkcd.service.StorageService
+import com.moneta.adrian.xkcd.service.implementations.ContentProviderStorageService
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -14,11 +16,13 @@ import org.koin.dsl.module
 class XKCDApplication : Application() {
 
     private val koinModules = module {
-                //services
+
+        //services
         single { ApiFactory.getApi(ComicApi::class.java) }
+        single<StorageService> { ContentProviderStorageService(get()) }
 
         //models
-        single { XKCDModel(get()) }
+        single { XKCDModel(get(), get()) }
 
         //presenters
         single { XKCDPresenter(get()) }
@@ -30,10 +34,10 @@ class XKCDApplication : Application() {
      }
 
      private fun initInjector() {
-        startKoin {
-            androidLogger(Level.DEBUG)
-            androidContext(this@XKCDApplication)
-            modules(koinModules)
+         startKoin {
+             androidLogger(Level.DEBUG)
+             androidContext(applicationContext)
+             modules(koinModules)
         }
      }
 

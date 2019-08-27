@@ -11,10 +11,9 @@ class XKCDPresenter(val model : XKCDModel) {
         get() = _view?.get()
         set(value) {
             _view = if(null != value) WeakReference(value) else null
-            load()
         }
 
-    private fun load() {
+    fun load() {
         view ?: return
         model.getComicsCount { count ->
             //todo display info about retrying
