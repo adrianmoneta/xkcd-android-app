@@ -7,7 +7,7 @@ import com.moneta.adrian.xkcd.provider.CursorHelper
 import com.moneta.adrian.xkcd.provider.UriHelper
 import com.moneta.adrian.xkcd.service.ComicStorageService
 
-class ComicProviderService(private val context : Context) : ComicStorageService {
+class ComicContentProviderService(private val context : Context) : ComicStorageService {
     override fun putIssue(comic: Comic) {
         context.contentResolver.insert(
             UriHelper.buildComicUri(comic.num),

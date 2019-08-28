@@ -6,6 +6,7 @@ import android.util.Log
 import com.moneta.adrian.xkcd.model.Comic
 import com.moneta.adrian.xkcd.service.ComicApi
 import com.moneta.adrian.xkcd.service.ComicStorageService
+import com.moneta.adrian.xkcd.service.FavouritesService
 import com.moneta.adrian.xkcd.utils.TAG
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
@@ -17,7 +18,8 @@ import java.lang.Exception
 
 class XKCDModel(
     private val comicApi: ComicApi,
-    private val comicStorageService: ComicStorageService) {
+    private val comicStorageService: ComicStorageService,
+    private val favouritesService: FavouritesService) {
 
 
     fun getLastIssue(complete: (Comic?) -> Unit) {
@@ -79,4 +81,9 @@ class XKCDModel(
             }
         })
     }
+
+    fun favourComic(issueNumber: Int) = favouritesService.favourComic(issueNumber)
+
+    fun unfavourComic(issueNumber: Int) = favouritesService.unfavourComic(issueNumber)
+
 }

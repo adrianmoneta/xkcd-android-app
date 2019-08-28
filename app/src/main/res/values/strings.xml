@@ -8,4 +8,8 @@
     <string name="controls_next">&gt;</string>
     <string name="controls_last">&gt;|</string>
 
+    <string name="menu_favoured">favoured</string>
+    <string name="menu_favour">favour</string>
+
+
 </resources>

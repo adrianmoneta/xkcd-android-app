@@ -28,12 +28,17 @@ class XKCDPresenter(val model : XKCDModel) {
         }
     }
 
-    fun requestBitmap(comic: Comic) {
+    fun requestBitmapUpdate(comic: Comic) {
         view ?: return
         model.requestBitmap(comic) { success ->
-            if(!success) requestBitmap(comic)
+            if(!success) requestBitmapUpdate(comic)
+            else if(currentIssue == comic.num) requestBitmapUpdate(comic)
         }
     }
+
+    fun favourCurrentComic() = model.favourComic(currentIssue)
+
+    fun unfavourCurrentComic() = model.unfavourComic(currentIssue)
 
 
     fun selectFirst() {
