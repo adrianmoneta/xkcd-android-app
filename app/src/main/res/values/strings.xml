@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">xkcd-android-app</string>
-
     <string name="provider_content_authority" translatable="false">com.moneta.adrian.xkcd</string>
+
+    <string name="controls_first">|&lt;</string>
+    <string name="controls_prev">&lt;</string>
+    <string name="controls_random">random</string>
+    <string name="controls_next">&gt;</string>
+    <string name="controls_last">&gt;|</string>
 
 </resources>

@@ -3,6 +3,10 @@ package com.moneta.adrian.xkcd.provider
 import android.content.ContentValues
 import android.graphics.Bitmap
 import com.moneta.adrian.xkcd.model.Comic
+import java.nio.ByteBuffer
+import androidx.core.app.NotificationCompat.getExtras
+import java.io.ByteArrayOutputStream
+
 
 object ContentValuesHelper {
 
@@ -19,8 +23,15 @@ object ContentValuesHelper {
         cv.put(ComicTable.IMG_COLUMN, comic.img)
         cv.put(ComicTable.TITLE_COLUMN, comic.title)
         cv.put(ComicTable.DAY_COLUMN, comic.day)
+        cv.put(ComicTable.FAVOURED_COLUMN, if(comic.isFavoured) 1 else 0)
+        val bitmap = comic.imgBitmap ?: return cv
+
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        val bytes = stream.toByteArray()
+
+        cv.put(ComicTable.IMG_BLOB_COLUMN, bytes)
         return cv
     }
 
-    fun contentValuesForComic(comic: Comic, bitmap: Bitmap) : ContentValues = contentValuesForComic(comic)
 }

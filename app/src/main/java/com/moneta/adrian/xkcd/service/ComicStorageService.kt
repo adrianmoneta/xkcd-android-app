@@ -2,6 +2,7 @@ package com.moneta.adrian.xkcd.service
 
 import com.moneta.adrian.xkcd.model.Comic
 
-interface StorageService {
+interface ComicStorageService {
     fun putIssue(comic: Comic)
+    fun getIssue(issueNumber: Int, complete: (Comic?) -> Unit)
 }

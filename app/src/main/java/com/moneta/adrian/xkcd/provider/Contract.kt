@@ -20,7 +20,7 @@ object ComicTable {
 
     //COMMANDS
     const val CREATE_COMMAND = "CREATE TABLE $NAME (" +
-            "$NUM_COLUMN INTEGER PRIMARY KEY UNIQUE NOT NULL, " +
+            "$NUM_COLUMN INTEGER NOT NULL, " +
             "$MONTH_COLUMN TEXT NOT NULL, " +
             "$LINK_COLUMN TEXT NOT NULL, " +
             "$YEAR_COLUMN TEXT NOT NULL, " +
@@ -33,6 +33,6 @@ object ComicTable {
             "$DAY_COLUMN TEXT NOT NULL, " +
             "$IMG_BLOB_COLUMN BLOB, " +
             "$FAVOURED_COLUMN INTEGER NOT NULL DEFAULT 0, " +
-            "UNIQUE ($NUM_COLUMN) ON CONFLICT REPLACE)"
+            "PRIMARY KEY ($NUM_COLUMN) ON CONFLICT REPLACE)"
     const val DROP_COMMAND = "DROP TABLE IF EXISTS $NAME"
 }

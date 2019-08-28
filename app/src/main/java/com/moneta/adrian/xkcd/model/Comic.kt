@@ -1,5 +1,7 @@
 package com.moneta.adrian.xkcd.model
 
+import android.graphics.Bitmap
+
 data class Comic(
     val month: String,
     val num: Int,
@@ -11,5 +13,6 @@ data class Comic(
     val alt: String,
     val img: String,
     val title: String,
-    val day: String
-);
+    val day: String,
+    var isFavoured: Boolean = false,
+    var imgBitmap: Bitmap? = null)

@@ -7,8 +7,6 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
-import com.moneta.adrian.xkcd.provider.UriHelper.BITMAP_PATH
-import com.moneta.adrian.xkcd.provider.UriHelper.COMICS_PATH
 import com.moneta.adrian.xkcd.provider.UriHelper.COMIC_PATH
 import com.moneta.adrian.xkcd.provider.UriHelper.CONTENT_AUTHORITY
 import com.moneta.adrian.xkcd.provider.UriHelper.FAVOURITES_PATH
@@ -17,9 +15,7 @@ class ComicsContentProvider : ContentProvider() {
 
     companion object {
         const val COMIC = 100
-        const val COMICS = 200
-        const val BITMAP = 300
-        const val FAVOURITES = 400
+        const val FAVOURITES = 200
     }
 
     private var _db: ComicDatabase? = null
@@ -27,7 +23,6 @@ class ComicsContentProvider : ContentProvider() {
     private val db get() : ComicDatabase = _db!!
     private val uriMatcher: UriMatcher = buildUriMatcher()
     private val comicsQueryBuilder = SQLiteQueryBuilder().apply { tables = ComicTable.NAME }
-
 
 
     override fun onCreate() : Boolean {
@@ -39,13 +34,10 @@ class ComicsContentProvider : ContentProvider() {
     override fun getType(uri: Uri): String {
         return when(uriMatcher.match(uri)) {
             COMIC -> "${ContentResolver.CURSOR_ITEM_BASE_TYPE}/$CONTENT_AUTHORITY/$COMIC_PATH"
-            COMICS -> "${ContentResolver.CURSOR_DIR_BASE_TYPE}/$CONTENT_AUTHORITY/$COMICS_PATH"
-            BITMAP -> "${ContentResolver.CURSOR_DIR_BASE_TYPE}/$CONTENT_AUTHORITY/$BITMAP_PATH"
             FAVOURITES -> "${ContentResolver.CURSOR_DIR_BASE_TYPE}/$CONTENT_AUTHORITY/$FAVOURITES_PATH"
             else -> throw UnsupportedOperationException("Unknown uri [$uri]")
         }
     }
-
 
 
 
@@ -58,7 +50,7 @@ class ComicsContentProvider : ContentProvider() {
 
     private fun queryComic(uri: Uri): Cursor {
         val issueNumber = uri.pathSegments.last()
-        return comicsQueryBuilder.query(
+        val cursor = comicsQueryBuilder.query(
             db.readableDatabase,
             null,
             "${ComicTable.NUM_COLUMN} = ?",
@@ -66,6 +58,8 @@ class ComicsContentProvider : ContentProvider() {
             null,
             null,
             null)
+        cursor.setNotificationUri(context?.contentResolver, uri)
+        return cursor
     }
 
 
@@ -80,14 +74,10 @@ class ComicsContentProvider : ContentProvider() {
     }
 
     private fun insertComic(cv: ContentValues) {
-        db.writableDatabase.insert(ComicTable.NAME, null, cv)
-        val issueNumber = cv.getAsString(ComicTable.NUM_COLUMN)?.toIntOrNull() ?: return
-        val issueUri = UriHelper.buildComicUri(issueNumber) ?: return
+        val issueNumber = db.writableDatabase.insert(ComicTable.NAME, null, cv)
+        val issueUri = UriHelper.buildComicUri(issueNumber.toInt())
         context?.contentResolver?.notifyChange(issueUri, null)
     }
-
-
-
 
 
 
@@ -102,8 +92,6 @@ class ComicsContentProvider : ContentProvider() {
     private fun buildUriMatcher(): UriMatcher {
         val matcher = UriMatcher(UriMatcher.NO_MATCH)
         matcher.addURI(CONTENT_AUTHORITY, "$COMIC_PATH/#", COMIC)
-        matcher.addURI(CONTENT_AUTHORITY, "$COMICS_PATH/", COMICS)
-        matcher.addURI(CONTENT_AUTHORITY, "$BITMAP_PATH/#", BITMAP)
         matcher.addURI(CONTENT_AUTHORITY, "$FAVOURITES_PATH/", FAVOURITES)
         return matcher
     }

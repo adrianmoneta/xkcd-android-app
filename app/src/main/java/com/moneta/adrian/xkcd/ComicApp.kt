@@ -5,8 +5,8 @@ import com.moneta.adrian.xkcd.mvp.XKCDModel
 import com.moneta.adrian.xkcd.mvp.XKCDPresenter
 import com.moneta.adrian.xkcd.service.ApiFactory
 import com.moneta.adrian.xkcd.service.ComicApi
-import com.moneta.adrian.xkcd.service.StorageService
-import com.moneta.adrian.xkcd.service.implementations.ContentProviderStorageService
+import com.moneta.adrian.xkcd.service.ComicStorageService
+import com.moneta.adrian.xkcd.service.implementations.ComicProviderService
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -19,7 +19,7 @@ class XKCDApplication : Application() {
 
         //services
         single { ApiFactory.getApi(ComicApi::class.java) }
-        single<StorageService> { ContentProviderStorageService(get()) }
+        single<ComicStorageService> { ComicProviderService(get()) }
 
         //models
         single { XKCDModel(get(), get()) }

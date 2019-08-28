@@ -3,7 +3,8 @@ package com.moneta.adrian.xkcd.mvp
 
 interface XKCDView {
 
-    fun onCount(count: Int)
+    fun onSelectedIssueChanged()
 
+    fun onLoading()
 
 }
