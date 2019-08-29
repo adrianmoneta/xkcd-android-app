@@ -20,10 +20,10 @@ class XKCDPresenter(val model : XKCDModel) {
     fun load() {
         view ?: return
         model.getLastIssue { lastIssue ->
-            //todo display info about retrying
             lastIssue ?: return@getLastIssue load()
             issuesCount = lastIssue.num
-            if(-1 == currentIssue) currentIssue = issuesCount
+            if(-1 != currentIssue) return@getLastIssue
+            currentIssue = issuesCount
             view?.onSelectedIssueChanged()
         }
     }
@@ -31,8 +31,8 @@ class XKCDPresenter(val model : XKCDModel) {
     fun requestBitmapUpdate(comic: Comic) {
         view ?: return
         model.requestBitmap(comic) { success ->
-            if(!success) requestBitmapUpdate(comic)
-            else if(currentIssue == comic.num) requestBitmapUpdate(comic)
+            if(success) return@requestBitmap
+            if(currentIssue == comic.num) requestBitmapUpdate(comic)
         }
     }
 

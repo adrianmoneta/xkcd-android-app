@@ -9,19 +9,20 @@ import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
 import com.moneta.adrian.xkcd.provider.UriHelper.COMIC_PATH
 import com.moneta.adrian.xkcd.provider.UriHelper.CONTENT_AUTHORITY
-import com.moneta.adrian.xkcd.provider.UriHelper.FAVOURITES_PATH
+import com.moneta.adrian.xkcd.provider.UriHelper.COMICS_PATH
 
 class ComicsContentProvider : ContentProvider() {
 
     companion object {
         const val COMIC = 100
-        const val FAVOURITES = 200
+        const val COMICS = 200
     }
 
     private var _db: ComicDatabase? = null
 
     private val db get() : ComicDatabase = _db!!
     private val uriMatcher: UriMatcher = buildUriMatcher()
+    private val comicQueryBuilder = SQLiteQueryBuilder().apply { tables = ComicTable.NAME }
     private val comicsQueryBuilder = SQLiteQueryBuilder().apply { tables = ComicTable.NAME }
 
 
@@ -34,7 +35,7 @@ class ComicsContentProvider : ContentProvider() {
     override fun getType(uri: Uri): String {
         return when(uriMatcher.match(uri)) {
             COMIC -> "${ContentResolver.CURSOR_ITEM_BASE_TYPE}/$CONTENT_AUTHORITY/$COMIC_PATH"
-            FAVOURITES -> "${ContentResolver.CURSOR_DIR_BASE_TYPE}/$CONTENT_AUTHORITY/$FAVOURITES_PATH"
+            COMICS -> "${ContentResolver.CURSOR_DIR_BASE_TYPE}/$CONTENT_AUTHORITY/$COMICS_PATH"
             else -> throw UnsupportedOperationException("Unknown uri [$uri]")
         }
     }
@@ -44,13 +45,25 @@ class ComicsContentProvider : ContentProvider() {
     override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
         return when(uriMatcher.match(uri)) {
             COMIC -> queryComic(uri)
+            COMICS -> queryComics(projection, selection, selectionArgs, sortOrder)
             else -> throw UnsupportedOperationException("Query operation not supported for uri: [$uri]")
         }
     }
 
+    private fun queryComics(projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
+        return comicsQueryBuilder.query(
+            db.readableDatabase,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            sortOrder)
+    }
+
     private fun queryComic(uri: Uri): Cursor {
         val issueNumber = uri.pathSegments.last()
-        val cursor = comicsQueryBuilder.query(
+        val cursor = comicQueryBuilder.query(
             db.readableDatabase,
             null,
             "${ComicTable.NUM_COLUMN} = ?",
@@ -92,7 +105,7 @@ class ComicsContentProvider : ContentProvider() {
     private fun buildUriMatcher(): UriMatcher {
         val matcher = UriMatcher(UriMatcher.NO_MATCH)
         matcher.addURI(CONTENT_AUTHORITY, "$COMIC_PATH/#", COMIC)
-        matcher.addURI(CONTENT_AUTHORITY, "$FAVOURITES_PATH/", FAVOURITES)
+        matcher.addURI(CONTENT_AUTHORITY, "$COMICS_PATH/", COMICS)
         return matcher
     }
 }

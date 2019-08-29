@@ -23,19 +23,21 @@ class XKCDModel(
 
 
     fun getLastIssue(complete: (Comic?) -> Unit) {
+        comicStorageService.getLastIssue { cached ->
+            if(null != cached) complete(cached)
+        }
         comicApi.getLastComicIssue().enqueue(object: Callback<Comic> {
 
             override fun onResponse(call: Call<Comic>, response: Response<Comic>) {
                 val lastIssue = response.body() ?: return complete(null)
                 comicStorageService.getIssue(lastIssue.num) { cached ->
-                    if(null == cached) comicStorageService.putIssue(lastIssue)
-                    complete(lastIssue)
+                    cached ?: comicStorageService.putIssue(lastIssue)
+                    complete(cached ?: lastIssue)
                 }
             }
 
             override fun onFailure(call: Call<Comic>, t: Throwable) {
                 Log.w(TAG, "Couldn't fetch last issue", t)
-
                 complete(null)
             }
         })
@@ -85,5 +87,4 @@ class XKCDModel(
     fun favourComic(issueNumber: Int) = favouritesService.favourComic(issueNumber)
 
     fun unfavourComic(issueNumber: Int) = favouritesService.unfavourComic(issueNumber)
-
 }

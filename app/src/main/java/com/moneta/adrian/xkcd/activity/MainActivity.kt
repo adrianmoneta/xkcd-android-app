@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(), XKCDView, LoaderManager.LoaderCallback
 
     override fun onLoading() {
         progress.visibility = View.VISIBLE
+        img_placeholder.visibility = View.GONE
         favMenuItem?.isVisible = false
     }
 

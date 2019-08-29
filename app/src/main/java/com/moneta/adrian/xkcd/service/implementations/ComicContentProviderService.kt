@@ -2,6 +2,7 @@ package com.moneta.adrian.xkcd.service.implementations
 
 import android.content.Context
 import com.moneta.adrian.xkcd.model.Comic
+import com.moneta.adrian.xkcd.provider.ComicTable
 import com.moneta.adrian.xkcd.provider.ContentValuesHelper
 import com.moneta.adrian.xkcd.provider.CursorHelper
 import com.moneta.adrian.xkcd.provider.UriHelper
@@ -21,6 +22,20 @@ class ComicContentProviderService(private val context : Context) : ComicStorageS
             null,
             null,
             null)
+        cursor ?: return complete(null)
+
+        val comic = if(cursor.moveToFirst()) CursorHelper.readComic(cursor) else null
+        cursor.close()
+        complete(comic)
+    }
+
+    override fun getLastIssue(complete: (Comic?) -> Unit) {
+       val cursor = context.contentResolver.query(
+           UriHelper.COMICS_CONTENT_URI,
+           null,
+           null,
+           null,
+           "${ComicTable.NUM_COLUMN} DESC")
         cursor ?: return complete(null)
 
         val comic = if(cursor.moveToFirst()) CursorHelper.readComic(cursor) else null
